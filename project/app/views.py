@@ -18,8 +18,8 @@ DB = [
 # Test data for tasks
 
 ASSIGNMENTS = [
-    {'id': 1, 'title': 'Cleaning','slug': 'cleaning', 'description': 'Clean the shop', 'due_date': '10-30-2024', 'completed': False, 'people_involved': 'Bob, Jane, Mary, Walter'},
-    {'id': 2, 'title': 'Inventory','slug': 'inventory', 'description': 'Organize inventory', 'due_date': '11-05-2024', 'completed': True, 'people_involved': 'Alice, Mark'},
+    {'id': 1, 'title': 'Group Project','slug': 'cleaning', 'description': 'Start working on your group project', 'due_date': '10-30-2024', 'completed': False, 'people_involved': 'Bob, Jane, Mary, Walter'},
+    {'id': 2, 'title': 'Math Test','slug': 'math test', 'description': 'Make sure to take test', 'due_date': '11-05-2024', 'completed': True, 'people_involved': 'Alice, Mark'},
 ]
 
 # used to hold our users

@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Assignments {% endblock %}
+
+{% block styler %}
+<link rel="stylesheet" href="{% static 'css/assignment.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="py-3 py-md-5">
+    <div class="container">
+
+      <div class="d-flex mb-3">
+        <a href="{% url 'logout' %}" class="btn btn-danger ms-auto">Logout</a>
+      </div>
+    
+      <div class="row justify-content-center">
+        <div class="col-12 col-lg-9 col-xl-8">
+          <div class="card widget-card border-light shadow-sm">
+            <div class="card-body p-4">
+              <h5 class="card-title widget-card-title mb-4">Today's Assignments</h5>
+              <div class="table-responsive">
+                <table class="table table-borderless text-start m-0">
+                  <thead>
+                    <tr>
+                      <th>Assignment</th>
+                      <th>Due Date</th>
+                      <th>Description</th>
+                      <th>People Involved</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for assignment in assignments %}
+                    <tr>
+                      <td>
+                        <h6 class="mb-1">
+                          <a href="{% url 'assignment' assignment.slug %}">{{ assignment.title }}</a>
+                        </h6>
+                      </td>
+                      <td>
+                        <h6 class="mb-1">{{ assignment.due_date }}</h6>
+                      </td>
+                      <td>
+                        <h6 class="mb-1">{{ assignment.description }}</h6>
+                      </td>
+                      <td>
+                        <p class="mb-0">{{ assignment.people_involved }}</p>
+                      </td>
+                      <td>
+                        {% if assignment.completed %}
+                          <span class="badge rounded-pill bg-success">Completed</span>
+                        {% else %}
+                          <span class="badge rounded-pill bg-danger">Pending</span>
+                        {% endif %}
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,9 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}manager{% endblock %}
+{% block title %} Assigner {% endblock %}
 {% block styler %}
 <link rel="stylesheet" href="{% static 'css/employee.css' %}">
 {% endblock %}
+
+{% block content %}
 
 <!-- Section container for the student list with full viewport height -->
 <section class="vh-100 gradient-custom-2">
@@ -59,7 +61,7 @@
               <thead>
                 <tr>  <!-- Table header row -->
                   <th scope="col">Student</th>  <!-- Column for team member names -->
-                  <th scope="col">assignment</th>  <!-- Column for tasks -->
+                  <th scope="col">Assignment</th>  <!-- Column for tasks -->
                   <th scope="col">Priority</th>  <!-- Column for priority levels -->
                   <th scope="col">Actions</th>  <!-- Column for action buttons -->
                 </tr>
@@ -71,7 +73,7 @@
                     <span class="ms-2">Jane Doe</span>  <!-- Team member name with left margin -->
                   </th>
                   <td class="align-middle">  <!-- Middle aligned table cell -->
-                    <span>Call Sam For payments</span>  <!-- Task description -->
+                    <span>Make sure Bob grades papers</span>  <!-- Task description -->
                   </td>
                   <td class="align-middle">  <!-- Middle aligned table cell -->
                     <h6 class="mb-0"><span class="badge bg-danger">High priority</span></h6>  <!-- Priority badge -->
@@ -136,5 +138,9 @@
       <td class="align-middle">
         <h6 class="mb-0"><span class="badge bg-${priority === 'High' ? 'danger' : priority === 'Middle' ? 'warning' : 'success'}">${priority} priority</span></h6>
       </td>
-  `
-});
+        `
+    });
+
+</script>
+
+{% endblock %}

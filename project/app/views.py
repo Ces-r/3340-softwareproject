@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages 
 from app.models import Assignment
+from django.shortcuts import get_object_or_404
 
 
 # Test data for usernames and passwords
@@ -76,25 +77,44 @@ def assigner_view(request):
 # view for employee tasks that shows a list of all tasks 
 # an employee has to commit
 
+# def all_assignments_view(request):
+#    return render(request, 'all_assignments.html', {'assignments': ASSIGNMENTS, 'role': 'user'})
+
 def all_assignments_view(request):
-    return render(request, 'all_assignments.html', {'assignments': ASSIGNMENTS, 'role': 'user'})
+    # Fetch all assignments from the database
+    assignments = Assignment.objects.all()
+    return render(request, 'all_assignments.html', {'assignments': assignments, 'role': 'user'})
 
 # view for detailed employee tasks
 
-def assignment_view(request, assignment_slug):
+# def assignment_view(request, assignment_slug):
     
-    assignment = None
+#     assignment = None
 
-    for a in ASSIGNMENTS:
-        if a['slug'] == assignment_slug:
-            assignment = a
-            break
+#     for a in ASSIGNMENTS:
+#         if a['slug'] == assignment_slug:
+#             assignment = a
+#             break
 
+
+#     if request.method == 'POST':
+#         if 'complete' in request.POST:
+#             assignment['completed'] = True
+#         elif 'incomplete' in request.POST:
+#             assignment['completed'] = False
+    
+#     return render(request, 'assignment.html', {'assignment': assignment})
+
+def assignment_view(request, assignment_slug):
+    # Get the assignment by slug or return 404 if not found
+    assignment = get_object_or_404(Assignment, slug=assignment_slug)
 
     if request.method == 'POST':
         if 'complete' in request.POST:
-            assignment['completed'] = True
+            assignment.status = True  # Update the status field
+            assignment.save()
         elif 'incomplete' in request.POST:
-            assignment['completed'] = False
-    
+            assignment.status = False  # Update the status field
+            assignment.save()
+
     return render(request, 'assignment.html', {'assignment': assignment})

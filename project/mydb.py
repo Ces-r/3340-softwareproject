@@ -4,11 +4,12 @@ import mysql.connector
 dataBase = mysql.connector.connect(
     host = 'localhost',
     user = 'root',
-    passwd = 'Yuanne04',
+    passwd = 'password',
 )
 
 # middleware
 cursorObject = dataBase.cursor()
 
-cursorObject.execute("CREATE DATABASE 3340databaseTEST")
-print("Hello data base 3340data")
+cursorObject.execute("CREATE DATABASE IF NOT  EXISTS 3340databaseProject")
+print("Hello data base 3340dataProject")
+

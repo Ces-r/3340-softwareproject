@@ -3,19 +3,21 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages 
 from app.models import Assignment
 from django.shortcuts import get_object_or_404
-
+from django.contrib.auth.forms import UserCreationForm
+from app.forms import SignUpForm
 
 # Test data for usernames and passwords
 # CustomUser.objects.create_user(username='Cathy', password='pass123', is_admin=True)
 # CustomUser.objects.create_user(username='Betty', password='1234', is_admin=True)
 # CustomUser.objects.create_user(username='Leon', password='ok', is_admin=False)
+# CustomUser.objects.create_user(username='John', password='uncommonPassword', is_admin=False)
 
 # Test data for tasks
 
-ASSIGNMENTS = [
-    {'id': 1, 'title': 'Group Project','slug': 'cleaning', 'description': 'Start working on your group project', 'due_date': '10-30-2024', 'completed': False, 'people_involved': 'Bob, Jane, Mary, Walter'},
-    {'id': 2, 'title': 'Math Test','slug': 'math test', 'description': 'Make sure to take test', 'due_date': '11-05-2024', 'completed': True, 'people_involved': 'Alice, Mark'},
-]
+# ASSIGNMENTS = [
+#     {'id': 1, 'title': 'Group Project','slug': 'cleaning', 'description': 'Start working on your group project', 'due_date': '10-30-2024', 'completed': False, 'people_involved': 'Bob, Jane, Mary, Walter'},
+#     {'id': 2, 'title': 'Math Test','slug': 'math test', 'description': 'Make sure to take test', 'due_date': '11-05-2024', 'completed': True, 'people_involved': 'Alice, Mark'},
+# ]
 
 # used to hold our users
 test_users = {}
@@ -118,3 +120,19 @@ def assignment_view(request, assignment_slug):
             assignment.save()
 
     return render(request, 'assignment.html', {'assignment': assignment})
+
+def register_user(request):
+    if request.method == "POST":
+        form = SignUpForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password1']
+            user = authenticate(username=username, password=password)
+            if user:
+                login(request, user)
+                messages.success(request, "Registration successful. You are now signed in!")
+                return redirect('home')
+    else:
+        form = SignUpForm()
+    return render(request, 'register.html', {'form': form})

@@ -1,89 +1,179 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %} Assigner {% endblock %}
+{% load tz %}
+
+{% block title %} Manager {% endblock %}
+
 {% block styler %}
-<link rel="stylesheet" href="{% static 'css/employee.css' %}">
+<link rel="stylesheet" href="{% static 'css/assigner.css' %}">
 {% endblock %}
 
 {% block content %}
-
-<!-- Section container for the student list with full viewport height -->
-<section class="vh-100 gradient-custom-2">
-  <div class="container py-5 h-100">  <!-- Container with vertical padding and full height -->
-    <div class="row d-flex justify-content-center align-items-center h-100">  <!-- Row with center alignment -->
-      <div class="col-md-12 col-xl-10">  <!-- Column spanning 12 grid spaces in medium devices and 10 in extra-large devices -->
-        <div class="card mask-custom">  <!-- Card component with custom mask -->
-          <div class="card-body p-4 text-white">  <!-- Card body with padding and white text color -->
-            <div class="text-center pt-3 pb-2">  <!-- Centered text with padding top and bottom -->
-              <h2 class="my-4">Manager controls</h2>  <!-- Heading for the manager -->
+<section class="gradient-custom-2">
+  <div class="container py-5">
+    <div class="row d-flex justify-content-center align-items-center">
+      <div class="col-md-12 col-xl-10">
+        <div class="card mask-custom custom-box">
+          <div class="card-body p-4 text-black">
+            <div class="text-center pt-3 pb-2">
+              <h2 class="my-4">Manager Controls</h2>
             </div>
-            
-            <!-- Form to Add New Person -->
-            <div class="mb-4">  <!-- Margin bottom for spacing -->
-              <h4 class="text-white">Add Students</h4>  <!-- Subheading for the form -->
-              <form id="addPersonForm">  <!-- Form with ID for JavaScript targeting -->
-                <div class="form-group">  <!-- Form group for styling -->
-                  <label for="newPerson">Student:</label>  <!-- Label for new person input -->
-                  <input type="text" id="newPerson" class="form-control" placeholder="Enter students name " required>  <!-- Input for new person's name -->
-                </div>
-                <button type="submit" class="btn btn-primary mt-2">Add Person</button>  <!-- Submit button for adding person -->
+
+            <!-- Add Assignments Section -->
+            <div class="mb-4">
+              <h4 class="text-black">Add Assignments</h4>
+              <form method="POST" action="{% url 'assigner' %}">
+                {% csrf_token %}
+                <table class="table align-middle">
+                  <thead>
+                    <tr>
+                      <th scope="col">Students</th>
+                      <th scope="col">Assignment</th>
+                      <th scope="col">Description</th>
+                      <th scope="col">Due Date</th>
+                      <th scope="col">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <!-- Students Dropdown -->
+                      <td>
+                        <select id="teamMembers" name="teamMembers" class="form-select" required>
+                            <option value="Select User">Select User</option>
+                          {% for student in students %}
+                            <option value="{{ student.id }}">{{ student.username }}</option>
+                          {% endfor %}
+                        </select>
+                      </td>
+                      <!-- Assignment Name -->
+                      <td>
+                        <input type="text" id="task" name="task" class="form-control" placeholder="Enter assignment name" required>
+                      </td>
+                      <!-- Description -->
+                      <td>
+                        <textarea id="description" name="description" class="form-control" placeholder="Enter assignment description" required></textarea>
+                      </td>
+                      <!-- Due Date -->
+                      <td>
+                        <input type="date" id="due_date" name="due_date" class="form-control" required value="{{ now|date:'Y-m-d' }}">
+                      </td>
+                      <!-- Submit Button -->
+                      <td>
+                        <button type="submit" class="btn btn-primary w-100">Add Task</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </form>
             </div>
 
-            <!-- Form to Add New Task -->
-            <div class="mb-4">  <!-- Margin bottom for spacing -->
-              <h4 class="text-white">Add assignments</h4>  <!-- Subheading for the form -->
-              <form id="addTaskForm">  <!-- Form with ID for JavaScript targeting -->
-                <div class="form-group">  <!-- Form group for styling -->
-                  <label for="teamMember">Student</label>  <!-- Label for team member input -->
-                  <select id="teamMember" class="form-control" required>  <!-- Select box for team members -->
-                    <!-- Dynamic options will be added here -->
-                  </select>
-                </div>
-                <div class="form-group">  <!-- Form group for task input -->
-                  <label for="task">assignment</label>  <!-- Label for task input -->
-                  <input type="text" id="task" class="form-control" placeholder="Enter assignment name" required>  <!-- Input for task description -->
-                </div>
-                <div class="form-group">  <!-- Form group for priority selection -->
-                  <label for="priority">Priority</label>  <!-- Label for priority select box -->
-                  <select id="priority" class="form-control" required>  <!-- Select box for priority levels -->
-                    <option value="High">High priority</option>  <!-- High priority option -->
-                    <option value="Middle">Middle priority</option>  <!-- Middle priority option -->
-                    <option value="Low">Low priority</option>  <!-- Low priority option -->
-                  </select>
-                </div>
-                <button type="submit" class="btn btn-primary mt-2">Add Task</button>  <!-- Submit button for adding task -->
+            <!-- Edit Assignments Section -->
+            <div class="mb-4">
+              <h4 class="text-black">Edit Assignments</h4>
+              <form method="POST" action="{% url 'assigner' %}">
+                {% csrf_token %}
+                <table class="table align-middle">
+                  <thead>
+                    <tr>
+                      <th scope="col">Assignment</th>
+                      <th scope="col">Students</th>
+                      <th scope="col">Description</th>
+                      <th scope="col">Due Date</th>
+                      <th scope="col">Status</th>
+                      <th scope="col">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                       <!-- Select Task Dropdown -->
+                        <td>
+                          <select id="taskToEdit" name="taskToEdit" class="form-select" required>
+                              <option value="Select Task">Select Task</option>
+                              {% for assignment in assignments %}
+                                  <option value="{{ assignment.id }}">{{ assignment.title }}</option>
+                              {% endfor %}
+                          </select>
+                      </td>
+                      <!-- Students Dropdown -->
+                      <td>
+                        <select id="teamMembers" name="teamMembers" class="form-select" required>
+                            <option value="Select User">Select User</option>
+                          {% for student in students %}
+                            <option value="{{ student.id }}">{{ student.username }}</option>
+                          {% endfor %}
+                        </select>
+                      </td>
+                      <!-- Description -->
+                      <td>
+                        <textarea id="editDescription" name="editDescription" class="form-control" 
+                                  placeholder="Edit description" required></textarea>
+                      </td>
+                      <!-- Due Date -->
+                      <td>
+                        <input type="date" id="editDueDate" name="editDueDate" class="form-control" required value="{{ now|date:'Y-m-d' }}">
+                      </td>
+                      <!-- Status Dropdown -->
+                      <td>
+                        <select id="status" name="status" class="form-select" required>
+                            <option value="Select Status">Select Status</option>
+                            <option value="Incomplete">Incomplete</option>
+                            <option value="Complete">Complete</option>
+                        </select>
+                      </td>
+                      <!-- Submit Button -->
+                      <td>
+                        <button type="submit" class="btn btn-primary w-100">Edit Task</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </form>
             </div>
-            
+
             <!-- Task List Table -->
-            <table class="table text-white mb-0">  <!-- Table with white text and no margin bottom -->
+            <h4 class="text-black mb-3">Current Tasks</h4>
+            <table class="table text-white mb-0">
               <thead>
-                <tr>  <!-- Table header row -->
-                  <th scope="col">Student</th>  <!-- Column for team member names -->
-                  <th scope="col">Assignment</th>  <!-- Column for tasks -->
-                  <th scope="col">Priority</th>  <!-- Column for priority levels -->
-                  <th scope="col">Actions</th>  <!-- Column for action buttons -->
+                <tr>
+                  <th scope="col">Students</th>
+                  <th scope="col">Assignment</th>
+                  <th scope="col">Description</th>
+                  <th scope="col">Due Date</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Actions</th>
                 </tr>
               </thead>
-              <tbody id="taskList">  <!-- Table body with ID for JavaScript targeting -->
-                <tr class="fw-normal">  <!-- Normal weight font for table row -->
-                  <th>  <!-- Table header for team member -->
-                    <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp" alt="avatar 1" style="width: 45px; height: auto;">  <!-- Team member avatar image -->
-                    <span class="ms-2">Jane Doe</span>  <!-- Team member name with left margin -->
-                  </th>
-                  <td class="align-middle">  <!-- Middle aligned table cell -->
-                    <span>Make sure Bob grades papers</span>  <!-- Task description -->
+              <tbody id="taskList">
+                {% for assignment in assignments %}
+                <tr class="fw-normal">
+                  <td>
+                    <span>{{ assignment.people_involved }}</span>
                   </td>
-                  <td class="align-middle">  <!-- Middle aligned table cell -->
-                    <h6 class="mb-0"><span class="badge bg-danger">High priority</span></h6>  <!-- Priority badge -->
+                  <td>
+                    <span>{{ assignment.title }}</span>
                   </td>
-                  <td class="align-middle">  <!-- Middle aligned table cell for actions -->
-                    <a href="#!" data-mdb-tooltip-init title="Done"><i class="fas fa-check fa-lg text-success me-3"></i></a>  <!-- Done action icon -->
-                    <a href="#!" data-mdb-tooltip-init title="Remove"><i class="fas fa-trash-alt fa-lg text-warning"></i></a>  <!-- Remove action icon -->
+                  <td>
+                    <span>{{ assignment.description }}</span>
+                  </td>
+                  <td>
+                    <span>{{ assignment.due_date }}</span>
+                  </td>
+                  <td>
+                    {% if assignment.completed %}
+                      <span class="badge bg-success">Completed</span>
+                    {% else %}
+                      <span class="badge bg-danger">Pending</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <form method="POST" action="{% url 'assigner' %}" style="display:inline;">
+                      {% csrf_token %}
+                      <input type="hidden" name="delete_task" value="{{ assignment.id }}">
+                      <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
                   </td>
                 </tr>
-                <!-- Additional tasks can be added here dynamically -->
+                {% endfor %}
               </tbody>
             </table>
           </div>
@@ -92,55 +182,4 @@
     </div>
   </div>
 </section>
-
-<script>
-  // Event listener for the form submission to add a new person
-  document.getElementById('addPersonForm').addEventListener('submit', function(e) {
-    e.preventDefault();  // Prevents default form submission behavior
-
-    // Get form values
-    const newPerson = document.getElementById('newPerson').value;
-
-    // Create a new option element for the select box
-    const newOption = document.createElement('option');
-    newOption.value = newPerson;
-    newOption.text = newPerson;
-
-    // Append the new option to the team member select box
-    document.getElementById('teamMember').appendChild(newOption);
-
-    // Clear the form
-    document.getElementById('addPersonForm').reset();
-  });
-
-  // Event listener for the form submission to add a new task
-  document.getElementById('addTaskForm').addEventListener('submit', function(e) {
-    e.preventDefault();  // Prevents default form submission behavior
-
-    // Get form values
-    const teamMember = document.getElementById('teamMember').value;
-    const task = document.getElementById('task').value;
-    const priority = document.getElementById('priority').value;
-
-    // Create a new table row
-    const newRow = document.createElement('tr');
-    newRow.classList.add('fw-normal');
-
-    // Set the inner HTML of the new row
-    newRow.innerHTML = `
-      <th>
-        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp" alt="avatar 1" style="width: 45px; height: auto;">
-        <span class="ms-2">${teamMember}</span>
-      </th>
-      <td class="align-middle">
-        <span>${task}</span>
-      </td>
-      <td class="align-middle">
-        <h6 class="mb-0"><span class="badge bg-${priority === 'High' ? 'danger' : priority === 'Middle' ? 'warning' : 'success'}">${priority} priority</span></h6>
-      </td>
-        `
-    });
-
-</script>
-
 {% endblock %}

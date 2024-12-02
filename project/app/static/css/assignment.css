@@ -1,0 +1,12 @@
+
+.wrapped-text {
+    white-space: normal;
+    max-width: 200px;
+    line-height: 1.5;
+    word-wrap: break-word;
+}
+
+table th {
+    white-space: nowrap;
+    padding: 10px;
+}

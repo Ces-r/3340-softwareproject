@@ -1,10 +1,140 @@
 {% extends 'base.html' %}
-
-{% block title %}Manager{% endblock %}
-
-{% block content %}
-
-<h1> hi </h1>
-
-
+{% load static %}
+{% block title %}manager{% endblock %}
+{% block styler %}
+<link rel="stylesheet" href="{% static 'css/employee.css' %}">
 {% endblock %}
+
+<!-- Section container for the student list with full viewport height -->
+<section class="vh-100 gradient-custom-2">
+  <div class="container py-5 h-100">  <!-- Container with vertical padding and full height -->
+    <div class="row d-flex justify-content-center align-items-center h-100">  <!-- Row with center alignment -->
+      <div class="col-md-12 col-xl-10">  <!-- Column spanning 12 grid spaces in medium devices and 10 in extra-large devices -->
+        <div class="card mask-custom">  <!-- Card component with custom mask -->
+          <div class="card-body p-4 text-white">  <!-- Card body with padding and white text color -->
+            <div class="text-center pt-3 pb-2">  <!-- Centered text with padding top and bottom -->
+              <h2 class="my-4">Manager controls</h2>  <!-- Heading for the manager -->
+            </div>
+            
+            <!-- Form to Add New Person -->
+            <div class="mb-4">  <!-- Margin bottom for spacing -->
+              <h4 class="text-white">Add Students</h4>  <!-- Subheading for the form -->
+              <form id="addPersonForm">  <!-- Form with ID for JavaScript targeting -->
+                <div class="form-group">  <!-- Form group for styling -->
+                  <label for="newPerson">Student:</label>  <!-- Label for new person input -->
+                  <input type="text" id="newPerson" class="form-control" placeholder="Enter students name " required>  <!-- Input for new person's name -->
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Add Person</button>  <!-- Submit button for adding person -->
+              </form>
+            </div>
+
+            <!-- Form to Add New Task -->
+            <div class="mb-4">  <!-- Margin bottom for spacing -->
+              <h4 class="text-white">Add assignments</h4>  <!-- Subheading for the form -->
+              <form id="addTaskForm">  <!-- Form with ID for JavaScript targeting -->
+                <div class="form-group">  <!-- Form group for styling -->
+                  <label for="teamMember">Student</label>  <!-- Label for team member input -->
+                  <select id="teamMember" class="form-control" required>  <!-- Select box for team members -->
+                    <!-- Dynamic options will be added here -->
+                  </select>
+                </div>
+                <div class="form-group">  <!-- Form group for task input -->
+                  <label for="task">assignment</label>  <!-- Label for task input -->
+                  <input type="text" id="task" class="form-control" placeholder="Enter assignment name" required>  <!-- Input for task description -->
+                </div>
+                <div class="form-group">  <!-- Form group for priority selection -->
+                  <label for="priority">Priority</label>  <!-- Label for priority select box -->
+                  <select id="priority" class="form-control" required>  <!-- Select box for priority levels -->
+                    <option value="High">High priority</option>  <!-- High priority option -->
+                    <option value="Middle">Middle priority</option>  <!-- Middle priority option -->
+                    <option value="Low">Low priority</option>  <!-- Low priority option -->
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Add Task</button>  <!-- Submit button for adding task -->
+              </form>
+            </div>
+            
+            <!-- Task List Table -->
+            <table class="table text-white mb-0">  <!-- Table with white text and no margin bottom -->
+              <thead>
+                <tr>  <!-- Table header row -->
+                  <th scope="col">Student</th>  <!-- Column for team member names -->
+                  <th scope="col">assignment</th>  <!-- Column for tasks -->
+                  <th scope="col">Priority</th>  <!-- Column for priority levels -->
+                  <th scope="col">Actions</th>  <!-- Column for action buttons -->
+                </tr>
+              </thead>
+              <tbody id="taskList">  <!-- Table body with ID for JavaScript targeting -->
+                <tr class="fw-normal">  <!-- Normal weight font for table row -->
+                  <th>  <!-- Table header for team member -->
+                    <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp" alt="avatar 1" style="width: 45px; height: auto;">  <!-- Team member avatar image -->
+                    <span class="ms-2">Jane Doe</span>  <!-- Team member name with left margin -->
+                  </th>
+                  <td class="align-middle">  <!-- Middle aligned table cell -->
+                    <span>Call Sam For payments</span>  <!-- Task description -->
+                  </td>
+                  <td class="align-middle">  <!-- Middle aligned table cell -->
+                    <h6 class="mb-0"><span class="badge bg-danger">High priority</span></h6>  <!-- Priority badge -->
+                  </td>
+                  <td class="align-middle">  <!-- Middle aligned table cell for actions -->
+                    <a href="#!" data-mdb-tooltip-init title="Done"><i class="fas fa-check fa-lg text-success me-3"></i></a>  <!-- Done action icon -->
+                    <a href="#!" data-mdb-tooltip-init title="Remove"><i class="fas fa-trash-alt fa-lg text-warning"></i></a>  <!-- Remove action icon -->
+                  </td>
+                </tr>
+                <!-- Additional tasks can be added here dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Event listener for the form submission to add a new person
+  document.getElementById('addPersonForm').addEventListener('submit', function(e) {
+    e.preventDefault();  // Prevents default form submission behavior
+
+    // Get form values
+    const newPerson = document.getElementById('newPerson').value;
+
+    // Create a new option element for the select box
+    const newOption = document.createElement('option');
+    newOption.value = newPerson;
+    newOption.text = newPerson;
+
+    // Append the new option to the team member select box
+    document.getElementById('teamMember').appendChild(newOption);
+
+    // Clear the form
+    document.getElementById('addPersonForm').reset();
+  });
+
+  // Event listener for the form submission to add a new task
+  document.getElementById('addTaskForm').addEventListener('submit', function(e) {
+    e.preventDefault();  // Prevents default form submission behavior
+
+    // Get form values
+    const teamMember = document.getElementById('teamMember').value;
+    const task = document.getElementById('task').value;
+    const priority = document.getElementById('priority').value;
+
+    // Create a new table row
+    const newRow = document.createElement('tr');
+    newRow.classList.add('fw-normal');
+
+    // Set the inner HTML of the new row
+    newRow.innerHTML = `
+      <th>
+        <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava1-bg.webp" alt="avatar 1" style="width: 45px; height: auto;">
+        <span class="ms-2">${teamMember}</span>
+      </th>
+      <td class="align-middle">
+        <span>${task}</span>
+      </td>
+      <td class="align-middle">
+        <h6 class="mb-0"><span class="badge bg-${priority === 'High' ? 'danger' : priority === 'Middle' ? 'warning' : 'success'}">${priority} priority</span></h6>
+      </td>
+  `
+});

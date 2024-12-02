@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block title %} {{ assignment.title }} {% endblock %}
+
+{% block content %}
+<section class="py-3 py-md-5">
+    <div class="container">
+      
+      <div class="d-flex mb-3">
+        <a href="{% url 'logout' %}" class="btn btn-danger ms-auto">Logout</a>
+      </div>
+
+      <div class="row justify-content-center">
+        <div class="col-12 col-lg-9 col-xl-8">
+          <div class="card widget-card border-light shadow-sm">
+            <div class="card-body p-4">
+              <h5 class="card-title widget-card-title mb-4">{{ assignment.title }}</h5>
+              <p><strong>Description:</strong> {{ assignment.description }}</p>
+              <p><strong>Due Date:</strong> {{ assignment.due_date }}</p>
+              <p><strong>People Involved:</strong> {{ assignment.people_involved }}</p>
+              <p><strong>Status:</strong> 
+                {% if assignment.completed %}
+                  <span class="badge rounded-pill bg-success">Completed</span>
+                {% else %}
+                  <span class="badge rounded-pill bg-danger">Pending</span>
+                {% endif %}
+              </p>
+              
+              <form method="POST" action="{% url 'assignment' assignment.slug %}">
+                {% csrf_token %}
+                {% if not assignment.completed %}
+                  <button type="submit" name="complete" class="btn btn-primary mt-3">Mark as Completed</button>
+                {% else %}
+                  <button type="submit" name="incomplete" class="btn btn-warning mt-3">Mark as Incomplete</button>
+                {% endif %}
+              </form>
+              
+              <a href="{% url 'all_assignments' %}" class="btn btn-secondary mt-3">Back to Task List</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</section>
+{% endblock %}

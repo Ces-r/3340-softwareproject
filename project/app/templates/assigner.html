@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load tz %}
+
+{% block title %} Manager {% endblock %}
+
+{% block styler %}
+<link rel="stylesheet" href="{% static 'css/assigner.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="gradient-custom-2">
+  <div class="container py-5">
+    <div class="row d-flex justify-content-center align-items-center">
+      <div class="col-md-12 col-xl-10">
+        <div class="card mask-custom custom-box">
+          <div class="card-body p-4 text-black">
+            <div class="text-center pt-3 pb-2">
+              <h2 class="my-4">Manager Controls</h2>
+            </div>
+
+            <!-- Add Assignments Section -->
+            <div class="mb-4">
+              <h4 class="text-black">Add Assignments</h4>
+              <form method="POST" action="{% url 'assigner' %}">
+                {% csrf_token %}
+                <table class="table align-middle">
+                  <thead>
+                    <tr>
+                      <th scope="col">Students</th>
+                      <th scope="col">Assignment</th>
+                      <th scope="col">Description</th>
+                      <th scope="col">Due Date</th>
+                      <th scope="col">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <!-- Students Dropdown -->
+                      <td>
+                        <select id="teamMembers" name="teamMembers" class="form-select" required>
+                            <option value="Select User">Select User</option>
+                          {% for student in students %}
+                            <option value="{{ student.id }}">{{ student.username }}</option>
+                          {% endfor %}
+                        </select>
+                      </td>
+                      <!-- Assignment Name -->
+                      <td>
+                        <input type="text" id="task" name="task" class="form-control" placeholder="Enter assignment name" required>
+                      </td>
+                      <!-- Description -->
+                      <td>
+                        <textarea id="description" name="description" class="form-control" placeholder="Enter assignment description" required></textarea>
+                      </td>
+                      <!-- Due Date -->
+                      <td>
+                        <input type="date" id="due_date" name="due_date" class="form-control" required value="{{ now|date:'Y-m-d' }}">
+                      </td>
+                      <!-- Submit Button -->
+                      <td>
+                        <button type="submit" class="btn btn-primary w-100">Add Task</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </form>
+            </div>
+
+            <!-- Edit Assignments Section -->
+            <div class="mb-4">
+              <h4 class="text-black">Edit Assignments</h4>
+              <form method="POST" action="{% url 'assigner' %}">
+                {% csrf_token %}
+                <table class="table align-middle">
+                  <thead>
+                    <tr>
+                      <th scope="col">Assignment</th>
+                      <th scope="col">Students</th>
+                      <th scope="col">Description</th>
+                      <th scope="col">Due Date</th>
+                      <th scope="col">Status</th>
+                      <th scope="col">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                       <!-- Select Task Dropdown -->
+                        <td>
+                          <select id="taskToEdit" name="taskToEdit" class="form-select" required>
+                              <option value="Select Task">Select Task</option>
+                              {% for assignment in assignments %}
+                                  <option value="{{ assignment.id }}">{{ assignment.title }}</option>
+                              {% endfor %}
+                          </select>
+                      </td>
+                      <!-- Students Dropdown -->
+                      <td>
+                        <select id="teamMembers" name="teamMembers" class="form-select" required>
+                            <option value="Select User">Select User</option>
+                          {% for student in students %}
+                            <option value="{{ student.id }}">{{ student.username }}</option>
+                          {% endfor %}
+                        </select>
+                      </td>
+                      <!-- Description -->
+                      <td>
+                        <textarea id="editDescription" name="editDescription" class="form-control" 
+                                  placeholder="Edit description" required></textarea>
+                      </td>
+                      <!-- Due Date -->
+                      <td>
+                        <input type="date" id="editDueDate" name="editDueDate" class="form-control" required value="{{ now|date:'Y-m-d' }}">
+                      </td>
+                      <!-- Status Dropdown -->
+                      <td>
+                        <select id="status" name="status" class="form-select" required>
+                            <option value="Select Status">Select Status</option>
+                            <option value="Incomplete">Incomplete</option>
+                            <option value="Complete">Complete</option>
+                        </select>
+                      </td>
+                      <!-- Submit Button -->
+                      <td>
+                        <button type="submit" class="btn btn-primary w-100">Edit Task</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </form>
+            </div>
+
+            <!-- Task List Table -->
+            <h4 class="text-black mb-3">Current Tasks</h4>
+            <table class="table text-white mb-0">
+              <thead>
+                <tr>
+                  <th scope="col">Students</th>
+                  <th scope="col">Assignment</th>
+                  <th scope="col">Description</th>
+                  <th scope="col">Due Date</th>
+                  <th scope="col">Status</th>
+                  <th scope="col">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="taskList">
+                {% for assignment in assignments %}
+                <tr class="fw-normal">
+                  <td>
+                    <span>{{ assignment.people_involved }}</span>
+                  </td>
+                  <td>
+                    <span>{{ assignment.title }}</span>
+                  </td>
+                  <td>
+                    <span>{{ assignment.description }}</span>
+                  </td>
+                  <td>
+                    <span>{{ assignment.due_date }}</span>
+                  </td>
+                  <td>
+                    {% if assignment.completed %}
+                      <span class="badge bg-success">Completed</span>
+                    {% else %}
+                      <span class="badge bg-danger">Pending</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <form method="POST" action="{% url 'assigner' %}" style="display:inline;">
+                      {% csrf_token %}
+                      <input type="hidden" name="delete_task" value="{{ assignment.id }}">
+                      <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                    </form>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.conf import settings
 
 
 class CustomUser(AbstractUser):
@@ -11,4 +12,4 @@ class Assignment(models.Model):
     description = models.TextField()
     due_date = models.DateField()
     completed = models.BooleanField(default=False)
-    people_involved = models.TextField()
+    people_involved = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='assignments')

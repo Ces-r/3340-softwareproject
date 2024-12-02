@@ -17,7 +17,11 @@
               <h5 class="card-title widget-card-title mb-4">{{ assignment.title }}</h5>
               <p><strong>Description:</strong> {{ assignment.description }}</p>
               <p><strong>Due Date:</strong> {{ assignment.due_date }}</p>
-              <p><strong>People Involved:</strong> {{ assignment.people_involved }}</p>
+              <p><strong>People Involved:</strong>
+                {% for user in assignment.people_involved.all %}
+                  {{ user.username }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+              </p>
               <p><strong>Status:</strong> 
                 {% if assignment.completed %}
                   <span class="badge rounded-pill bg-success">Completed</span>

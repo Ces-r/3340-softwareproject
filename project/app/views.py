@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages 
-from app.models import Assignment
+from app.models import Assignment, CustomUser
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
 from app.forms import SignUpForm
+from django.utils.text import slugify
 
 # Test data for usernames and passwords
 # CustomUser.objects.create_user(username='Cathy', password='pass123', is_admin=True)
@@ -72,9 +73,52 @@ def logout_view(request):
     return redirect('login')
 
 # view for manager
-
 def assigner_view(request):
-    return render(request, 'assigner.html', {'role': 'admin'})
+    assignments = Assignment.objects.all()
+    students = CustomUser.objects.all()
+
+    if request.method == 'POST':
+        # if it already exists
+        if request.POST.get("taskToEdit"):
+            task_to_edit = request.POST.get("taskToEdit")
+            team_member_ids = request.POST.getlist('teamMembers[]')
+            description = request.POST.get('editDescription')
+            due_date = request.POST.get('editDueDate')
+            status = request.POST.get('status')
+
+            assignment = get_object_or_404(Assignment, id=task_to_edit)
+            assignment.description = description
+            assignment.due_date = due_date
+            assignment.completed = status == 'Complete'
+            assignment.people_involved.set(team_member_ids)
+            assignment.save()
+            return redirect('assigner')
+
+            # create a new assignment
+        else:
+            title = request.POST.get('task')
+            description = request.POST.get('description')
+            due_date = request.POST.get('due_date')
+            namelist = request.POST.getlist('teamMembers[]')
+            slug = slugify(title)
+            # create
+            assignment = Assignment.objects.create(
+                title=title,
+                slug=slug,
+                description=description,
+                due_date=due_date
+            )
+            assignment.people_involved.set(namelist)
+            assignment.save()
+            return redirect('assigner') 
+
+
+    return render(request, 'assigner.html', 
+    {
+        'role': 'admin',
+        'assignments': assignments,
+        'students': students
+    })
 
 # view for employee tasks that shows a list of all tasks 
 # an employee has to commit

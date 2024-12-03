@@ -38,8 +38,7 @@
                     <tr>
                       <!-- Students Dropdown -->
                       <td>
-                        <select id="teamMembers" name="teamMembers" class="form-select" required>
-                            <option value="Select User">Select User</option>
+                        <select id="teamMembers" name="teamMembers[]" class="form-select" multiple required>
                           {% for student in students %}
                             <option value="{{ student.id }}">{{ student.username }}</option>
                           {% endfor %}
@@ -59,7 +58,7 @@
                       </td>
                       <!-- Submit Button -->
                       <td>
-                        <button type="submit" class="btn btn-primary w-100">Add Task</button>
+                        <button method="POST" type="submit" class="btn btn-primary w-100">Add Task</button>
                       </td>
                     </tr>
                   </tbody>
@@ -96,8 +95,7 @@
                       </td>
                       <!-- Students Dropdown -->
                       <td>
-                        <select id="teamMembers" name="teamMembers" class="form-select" required>
-                            <option value="Select User">Select User</option>
+                        <select id="teamMembers" name="teamMembers[]" class="form-select" multiple required>
                           {% for student in students %}
                             <option value="{{ student.id }}">{{ student.username }}</option>
                           {% endfor %}
@@ -147,7 +145,11 @@
                 {% for assignment in assignments %}
                 <tr class="fw-normal">
                   <td>
-                    <span>{{ assignment.people_involved }}</span>
+                    <span>
+                      {% for user in assignment.people_involved.all %}
+                        {{ user.username }}{% if not forloop.last %}, {% endif %}
+                      {% endfor %}
+                    </span>
                   </td>
                   <td>
                     <span>{{ assignment.title }}</span>

@@ -46,7 +46,11 @@
                         <h6 class="mb-1">{{ assignment.description }}</h6>
                       </td>
                       <td>
-                        <p class="mb-0">{{ assignment.people_involved }}</p>
+                        <span>
+                          {% for user in assignment.people_involved.all %}
+                            {{ user.username }}{% if not forloop.last %}, {% endif %}
+                          {% endfor %}
+                        </span>
                       </td>
                       <td>
                         {% if assignment.completed %}

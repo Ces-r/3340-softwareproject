@@ -10,4 +10,5 @@ urlpatterns = [
     path('assigner/', views.assigner_view, name='assigner'),
     path('all_assignments/', views.all_assignments_view, name='all_assignments'),
     path('<str:assignment_slug>/', views.assignment_view, name='assignment'),
+    #path('toggle-status/<int:assignment_id>/', views.toggle_status, name='toggle_status'),
 ]

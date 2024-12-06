@@ -4,7 +4,7 @@
 {% block title %} Assignments {% endblock %}
 
 {% block styler %}
-<link rel="stylesheet" href="{% static 'css/assignment.css' %}">
+<link rel="stylesheet" href="{% static 'css/all_assignments.css' %}">
 {% endblock %}
 
 {% block content %}
@@ -14,7 +14,27 @@
       <div class="d-flex mb-3">
         <a href="{% url 'logout' %}" class="btn btn-danger ms-auto">Logout</a>
       </div>
-    
+      
+      <!-- Filter Options -->
+      <div class="mb-3">
+        <label for="studentFilter" class="form-label">Filter by Student Involved</label>
+        <select id="studentFilter" class="form-select">
+          <option value="">All Students</option>
+          {% for student in students %}
+            <option value="{{ student.username }}">{{ student.username }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="mb-3">
+        <label for="statusFilter" class="form-label">Filter by Status</label>
+        <select id="statusFilter" class="form-select">
+          <option value="">All Statuses</option>
+          <option value="completed">Completed</option>
+          <option value="incomplete">Incomplete</option>
+        </select>
+      </div>
+
       <div class="row justify-content-center">
         <div class="col-12 col-lg-9 col-xl-8">
           <div class="card widget-card border-light shadow-sm">
@@ -31,9 +51,9 @@
                       <th>Status</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody id="taskList">
                     {% for assignment in assignments %}
-                    <tr>
+                    <tr data-students="{% for user in assignment.people_involved.all %}{{ user.username }}{% if not forloop.last %},{% endif %}{% endfor %}" data-status="{% if assignment.completed %}completed{% else %}incomplete{% endif %}">
                       <td>
                         <h6 class="mb-1">
                           <a href="{% url 'assignment' assignment.slug %}">{{ assignment.title }}</a>
@@ -70,4 +90,36 @@
       </div>
     </div>
 </section>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById('studentFilter').addEventListener('change', filterTasks);
+    document.getElementById('statusFilter').addEventListener('change', filterTasks);
+
+    function filterTasks() {
+      const studentFilter = document.getElementById('studentFilter').value.toLowerCase();
+      const statusFilter = document.getElementById('statusFilter').value.toLowerCase();
+
+      console.log('Student Filter:', studentFilter); // Debugging: Check selected student filter value
+      console.log('Status Filter:', statusFilter);   // Debugging: Check selected status filter value
+
+      document.querySelectorAll('#taskList tr').forEach(row => {
+        const students = row.getAttribute('data-students').toLowerCase().split(',');
+        const status = row.getAttribute('data-status').toLowerCase();
+
+        console.log('Students in Row:', students); // Debugging: Check students in row
+        console.log('Status in Row:', status);     // Debugging: Check status in row
+
+        const studentMatch = studentFilter === '' || students.includes(studentFilter);
+        const statusMatch = statusFilter === '' || status === statusFilter;
+
+        if (studentMatch && statusMatch) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+  });
+</script>
 {% endblock %}

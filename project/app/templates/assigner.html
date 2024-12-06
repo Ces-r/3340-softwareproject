@@ -11,6 +11,9 @@
 {% block content %}
 <section class="gradient-custom-2">
   <div class="container py-5">
+    <div class="d-flex mb-3">
+        <a href="{% url 'logout' %}" class="btn btn-danger ms-auto">Logout</a>
+      </div>
     <div class="row d-flex justify-content-center align-items-center">
       <div class="col-md-12 col-xl-10">
         <div class="card mask-custom custom-box">
@@ -36,14 +39,19 @@
                   </thead>
                   <tbody>
                     <tr>
-                      <!-- Students Dropdown -->
+                      <!-- Students scroll -->
                       <td>
-                        <select id="teamMembers" name="teamMembers[]" class="form-select" multiple required>
+                        <div style="height: 100px; width: 175px; overflow-y: auto;">
                           {% for student in students %}
-                            <option value="{{ student.id }}">{{ student.username }}</option>
+                            <div class="form-check">
+                              <input class="form-check-input" type="checkbox" name="teamMembers[]" value="{{ student.id }}" id="student{{ student.id }}">
+                              <label class="form-check-label" for="student{{ student.id }}">
+                                {{ student.username }}
+                              </label>
+                            </div>
                           {% endfor %}
-                        </select>
-                      </td>
+                        </div>
+                      </td>                                   
                       <!-- Assignment Name -->
                       <td>
                         <input type="text" id="task" name="task" class="form-control" placeholder="Enter assignment name" required>
@@ -93,14 +101,19 @@
                               {% endfor %}
                           </select>
                       </td>
-                      <!-- Students Dropdown -->
+                      <!-- Students scroll/check -->
                       <td>
-                        <select id="teamMembers" name="teamMembers[]" class="form-select" multiple required>
+                        <div style="height: 100px; width: 175px; overflow-y: auto;">
                           {% for student in students %}
-                            <option value="{{ student.id }}">{{ student.username }}</option>
+                            <div class="form-check">
+                              <input class="form-check-input" type="checkbox" name="teamMembers[]" value="{{ student.id }}" id="student{{ student.id }}">
+                              <label class="form-check-label" for="student{{ student.id }}">
+                                {{ student.username }}
+                              </label>
+                            </div>
                           {% endfor %}
-                        </select>
-                      </td>
+                        </div>
+                      </td>                                     
                       <!-- Description -->
                       <td>
                         <textarea id="editDescription" name="editDescription" class="form-control" 
@@ -128,6 +141,27 @@
               </form>
             </div>
 
+
+            <!-- Filter Options -->
+            <div class="mb-3">
+              <label for="studentFilter" class="form-label">Filter by Student Involved</label>
+              <select id="studentFilter" class="form-select">
+                <option value="">All Students</option>
+                {% for student in students %}
+                  <option value="{{ student.username }}">{{ student.username }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="statusFilter" class="form-label">Filter by Status</label>
+              <select id="statusFilter" class="form-select">
+                <option value="">All Statuses</option>
+                <option value="completed">Completed</option>
+                <option value="incomplete">Incomplete</option>
+              </select>
+            </div>
+
             <!-- Task List Table -->
             <h4 class="text-black mb-3">Current Tasks</h4>
             <table class="table text-white mb-0">
@@ -143,7 +177,7 @@
               </thead>
               <tbody id="taskList">
                 {% for assignment in assignments %}
-                <tr class="fw-normal">
+                <tr class="fw-normal" data-students="{% for user in assignment.people_involved.all %}{{ user.username }}{% if not forloop.last %},{% endif %}{% endfor %}" data-status="{% if assignment.completed %}completed{% else %}incomplete{% endif %}">
                   <td>
                     <span>
                       {% for user in assignment.people_involved.all %}
@@ -178,6 +212,33 @@
                 {% endfor %}
               </tbody>
             </table>
+
+            <script>
+              document.addEventListener("DOMContentLoaded", function() {
+                document.getElementById('studentFilter').addEventListener('change', filterTasks);
+                document.getElementById('statusFilter').addEventListener('change', filterTasks);
+
+                function filterTasks() {
+                  const studentFilter = document.getElementById('studentFilter').value.toLowerCase();
+                  const statusFilter = document.getElementById('statusFilter').value;
+
+                  document.querySelectorAll('#taskList tr').forEach(row => {
+                    const students = row.getAttribute('data-students').toLowerCase();
+                    const status = row.getAttribute('data-status');
+
+                    const studentMatch = studentFilter === '' || students.split(',').includes(studentFilter);
+                    const statusMatch = statusFilter === '' || status === statusFilter;
+
+                    if (studentMatch && statusMatch) {
+                      row.style.display = '';
+                    } else {
+                      row.style.display = 'none';
+                    }
+                  });
+                }
+              });
+            </script>
+                        
           </div>
         </div>
       </div>
@@ -185,3 +246,6 @@
   </div>
 </section>
 {% endblock %}
+
+
+

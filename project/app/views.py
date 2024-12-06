@@ -126,7 +126,8 @@ def assigner_view(request):
 def all_assignments_view(request):
     # Fetch all assignments from the database
     assignments = Assignment.objects.all()
-    return render(request, 'all_assignments.html', {'assignments': assignments, 'role': 'user'})
+    students = CustomUser.objects.all()
+    return render(request, 'all_assignments.html', {'assignments': assignments, 'students': students, 'role': 'user'})
 
 # view for detailed employee tasks
 def assignment_view(request, assignment_slug):

@@ -1,11 +1,14 @@
-/* General Styles */
+.table {
+    border-radius: 10px;
+    border: 4x solid #8d8d8d; /* Add a light border to tables */
+
+    overflow:hidden;
+}    
+
+
 body {
-    background: linear-gradient(to bottom, #ff6600 50%, #808080 50%); /* Grey */
-    font-family: 'Roboto', sans-serif;
-    color: #333;
-    transition: background-color 0.3s, color 0.3s;
-    margin: 0;
-    padding: 0;
+    background: linear-gradient(to bottom, #ff7011 20%, #ff6600 70%);
+    font-family: 'Poppins', sans-serif;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -16,19 +19,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Container */
-.container {
-    margin-top: 20px;
-    padding: 20px;
-    background-color: rgba(0, 123, 255, 0.8); /* Blue with transparency */
-    border-radius: 15px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-    max-width: 90%;
-    margin: 20px auto;
-}
+
 
 /* Card */
 .widget-card {
-    border: none;
+   
     border-radius: 15px;
     overflow: hidden;
     background: #fff;
@@ -64,29 +59,24 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .form-select:focus {
-    border-color: #808080; /* Grey */
+    border-color: #3e3e3e; /* Grey */
     box-shadow: 0 0 10px rgba(128, 128, 128, 0.3); /* Grey */
 }
 
 /* Table */
-.table {
-    color: #333;
-    margin-top: 20px;
-    width: 100%;
-    border-spacing: 0 10px;
-}
+
 
 .table thead th {
-    background-color: #ff6600; /* Orange */
+    background-color: #3e3e3e; /* Orange */
     color: #ffffff;
     font-weight: bold;
     text-transform: uppercase;
     padding: 15px;
-    border: none;
+    border-color: white;
 }
 
 .table tbody tr {
-    border: none;
+   
     border-radius: 15px;
     overflow: hidden;
     transition: background-color 0.3s;

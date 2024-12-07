@@ -6,28 +6,32 @@
 
 {% block styler %}
 <link rel="stylesheet" href="{% static 'css/assigner.css' %}">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 {% endblock %}
 
 {% block content %}
 <section class="gradient-custom-2">
   <div class="container py-5">
-    <div class="d-flex mb-3">
-        <a href="{% url 'logout' %}" class="btn btn-danger ms-auto">Logout</a>
-      </div>
+    
     <div class="row d-flex justify-content-center align-items-center">
       <div class="col-md-12 col-xl-10">
+        
         <div class="card mask-custom custom-box">
+          
           <div class="card-body p-4 text-black">
             <div class="text-center pt-3 pb-2">
+              <div class="d-flex">
+                <a href="{% url 'logout' %}" class="btn btn-danger ms-auto">Logout</a>
+              </div>
               <h2 class="my-4">Manager Controls</h2>
             </div>
 
             <!-- Add Assignments Section -->
             <div class="mb-4">
-              <h4 class="text-black">Add Assignments</h4>
+              <h4 class="text-bold">Add Assignments</h4>
               <form method="POST" action="{% url 'assigner' %}">
                 {% csrf_token %}
-                <table class="table align-middle">
+                <table class="table align-middle rounded-3 mt-1">
                   <thead>
                     <tr>
                       <th scope="col">Students</th>
@@ -66,7 +70,7 @@
                       </td>
                       <!-- Submit Button -->
                       <td>
-                        <button method="POST" type="submit" class="btn btn-primary w-100">Add Task</button>
+                        <button type="submit" class="btn btn-primary w-100">Add Task</button>
                       </td>
                     </tr>
                   </tbody>
@@ -75,11 +79,11 @@
             </div>
 
             <!-- Edit Assignments Section -->
-            <div class="mb-4">
+            <div class="mb-4 pt-3">
               <h4 class="text-black">Edit Assignments</h4>
               <form method="POST" action="{% url 'assigner' %}">
                 {% csrf_token %}
-                <table class="table align-middle">
+                <table class="table align-middle rounded-3 mt-1">
                   <thead>
                     <tr>
                       <th scope="col">Assignment</th>
@@ -141,77 +145,84 @@
               </form>
             </div>
 
-
             <!-- Filter Options -->
-            <div class="mb-3">
-              <label for="studentFilter" class="form-label">Filter by Student Involved</label>
-              <select id="studentFilter" class="form-select">
-                <option value="">All Students</option>
-                {% for student in students %}
-                  <option value="{{ student.username }}">{{ student.username }}</option>
-                {% endfor %}
-              </select>
-            </div>
-
-            <div class="mb-3">
-              <label for="statusFilter" class="form-label">Filter by Status</label>
-              <select id="statusFilter" class="form-select">
-                <option value="">All Statuses</option>
-                <option value="completed">Completed</option>
-                <option value="incomplete">Incomplete</option>
-              </select>
-            </div>
+            
 
             <!-- Task List Table -->
-            <h4 class="text-black mb-3">Current Tasks</h4>
-            <table class="table text-white mb-0">
-              <thead>
-                <tr>
-                  <th scope="col">Students</th>
-                  <th scope="col">Assignment</th>
-                  <th scope="col">Description</th>
-                  <th scope="col">Due Date</th>
-                  <th scope="col">Status</th>
-                  <th scope="col">Actions</th>
-                </tr>
-              </thead>
-              <tbody id="taskList">
-                {% for assignment in assignments %}
-                <tr class="fw-normal" data-students="{% for user in assignment.people_involved.all %}{{ user.username }}{% if not forloop.last %},{% endif %}{% endfor %}" data-status="{% if assignment.completed %}completed{% else %}incomplete{% endif %}">
-                  <td>
-                    <span>
-                      {% for user in assignment.people_involved.all %}
-                        {{ user.username }}{% if not forloop.last %}, {% endif %}
-                      {% endfor %}
-                    </span>
-                  </td>
-                  <td>
-                    <span>{{ assignment.title }}</span>
-                  </td>
-                  <td>
-                    <span>{{ assignment.description }}</span>
-                  </td>
-                  <td>
-                    <span>{{ assignment.due_date }}</span>
-                  </td>
-                  <td>
-                    {% if assignment.completed %}
-                      <span class="badge bg-success">Completed</span>
-                    {% else %}
-                      <span class="badge bg-danger">Incomplete</span>
-                    {% endif %}
-                  </td>
-                  <td>
-                    <form method="POST" action="{% url 'assigner' %}" style="display:inline;">
-                      {% csrf_token %}
-                      <input type="hidden" name="delete_task" value="{{ assignment.id }}">
-                      <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                    </form>
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+<h4 class="text-black mb-3 align-middle">Current Tasks</h4>
+
+<div class="row mb-3">
+  <!-- Filter by Student Dropdown -->
+  <div class="col-md-4">
+    <label for="studentFilter" class="form-label">Filter by Student Involved</label>
+    <select id="studentFilter" class="form-select">
+      <option value="">All Students</option>
+      {% for student in students %}
+        <option value="{{ student.username }}">{{ student.username }}</option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <!-- Filter by Status Dropdown -->
+  <div class="col-md-4">
+    <label for="statusFilter" class="form-label">Filter by Status</label>
+    <select id="statusFilter" class="form-select">
+      <option value="">All Statuses</option>
+      <option value="completed">Completed</option>
+      <option value="incomplete">Incomplete</option>
+    </select>
+  </div>
+</div>
+
+<table class="table text-white mb-1">
+  <thead>
+    <tr>
+      <th scope="col">Students</th>
+      <th scope="col">Assignment</th>
+      <th scope="col">Description</th>
+      <th scope="col">Due</th>
+      <th scope="col">Status</th>
+      <th scope="col">Actions</th>
+    </tr>
+  </thead>
+  <tbody id="taskList">
+    {% for assignment in assignments %}
+      <tr class="fw-normal" data-students="{% for user in assignment.people_involved.all %}{{ user.username }}{% if not forloop.last %},{% endif %}{% endfor %}" data-status="{% if assignment.completed %}completed{% else %}incomplete{% endif %}">
+        <td>
+          <span>
+            {% for user in assignment.people_involved.all %}
+              {{ user.username }}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+          </span>
+        </td>
+        <td>
+          <span>{{ assignment.title }}</span>
+        </td>
+        <td>
+          <span>{{ assignment.description }}</span>
+        </td>
+        <td>
+          <span>{{ assignment.due_date }}</span>
+        </td>
+        <td>
+          {% if assignment.completed %}
+            <span class="badge bg-success">Completed</span>
+          {% else %}
+            <span class="badge bg-danger">Incomplete</span>
+          {% endif %}
+        </td>
+        <td>
+          <form method="POST" action="{% url 'assigner' %}" style="display:inline;">
+            {% csrf_token %}
+            <input type="hidden" name="delete_task" value="{{ assignment.id }}">
+            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
 
             <script>
               document.addEventListener("DOMContentLoaded", function() {
@@ -246,6 +257,3 @@
   </div>
 </section>
 {% endblock %}
-
-
-
